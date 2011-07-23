@@ -18,6 +18,33 @@
     height:100%;
   }
 </style>
+
+<script type="text/shader" id="vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aVertexColor;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    varying vec4 vColor;
+
+    void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vColor = aVertexColor;
+    }
+</script>
+
+<script type="text/shader" id="fragment">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    varying vec4 vColor;
+
+    void main(void) {
+        gl_FragColor = vColor;
+    }
+</script>
+
 <script type="text/javascript" src="sylvester.js"></script>
 <script type="text/javascript" src="glUtils.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
@@ -25,7 +52,9 @@
 <script type="text/javascript" src="initquad.js"></script>
 <script type="text/javascript">
   $(document).ready(function() {
-      document.start();
+    vertexShaderSource = document.getElementById("vertex").text;
+    fragmentShaderSource = document.getElementById("fragment").text;
+    document.start(vertexShaderSource, fragmentShaderSource);
   });
 
 </script>
