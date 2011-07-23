@@ -5,18 +5,23 @@
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 
 <style>
-  #status {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    color: white;
-    font-family: sans-serif;
-    font-size: 3em;
-  }
-  #port {
-    width:100%;
-    height:100%;
-  }
+    body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+    #status {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        color: white;
+        font-family: sans-serif;
+        font-size: 3em;
+    }
+    #port {
+        width:100%;
+        height:100%;
+    }
 </style>
 
 <script type="text/shader" id="vertex">
@@ -25,11 +30,15 @@
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
+    uniform int height;
+    uniform int width;
     varying vec4 vColor;
+    varying vec2 texCoord;
 
     void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        gl_Position = vec4(aVertexPosition, 1.0);
         vColor = aVertexColor;
+        texCoord = vec2(aVertexPosition.x, aVertexPosition.y);
     }
 </script>
 
@@ -39,25 +48,20 @@
     #endif
 
     varying vec4 vColor;
+    varying vec2 texCoord;
 
     void main(void) {
         gl_FragColor = vColor;
+        gl_FragColor.r = (1.0 + texCoord.x) / 2.0;
+        gl_FragColor.g = (1.0 + texCoord.y) / 2.0;
+        gl_FragColor.b = (1.0 + texCoord.x) / 2.0;
     }
 </script>
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script type="text/javascript" src="sylvester.js"></script>
 <script type="text/javascript" src="glUtils.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <script type="text/javascript" src="underscore-min.js"></script>
 <script type="text/javascript" src="initquad.js"></script>
-<script type="text/javascript">
-  $(document).ready(function() {
-    vertexShaderSource = document.getElementById("vertex").text;
-    fragmentShaderSource = document.getElementById("fragment").text;
-    document.start(vertexShaderSource, fragmentShaderSource);
-  });
-
-</script>
 </head>
 
 <body> 
@@ -65,6 +69,13 @@
       <canvas id="canvas" style="border: none;" width="500" height="500"></canvas>
       <div id="status">Some text!</div>
   </div>
+  <script type="text/javascript">
+      $(document).ready(function() {
+          var vertexShaderSource = document.getElementById("vertex").text;
+          var fragmentShaderSource = document.getElementById("fragment").text;
+          document.start(vertexShaderSource, fragmentShaderSource);
+      });
+  </script>
 </body>
 
 </html>

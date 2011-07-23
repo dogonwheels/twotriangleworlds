@@ -11,13 +11,13 @@
         return gl;
     };
     resizeScene = function(gl, canvas) {
-        var height, width, _ref;
-        _ref = [$("#port").width(), $("#port").height()], width = _ref[0], height = _ref[1];
-        canvas.width = width;
-        gl.viewportWidth = width;
-        canvas.height = height;
-        return gl.viewportHeight = height;
+        var viewport = $("#port");
+        canvas.width = viewport.width();
+        canvas.height = viewport.height();
+        gl.viewportWidth = canvas.width;
+        gl.viewportHeight = canvas.height;
     };
+
     createShader = function(gl, shader, text) {
         gl.shaderSource(shader, text);
         gl.compileShader(shader);
@@ -77,7 +77,7 @@
         squareVertexPositionBuffer.numItems = 4;
         squareVertexColorBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-        colors = [0.5, 0.5, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0];
+        colors = [1.0, 0.5, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
         squareVertexColorBuffer.itemSize = 4;
         squareVertexColorBuffer.numItems = 4;
