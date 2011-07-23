@@ -28,17 +28,14 @@
     attribute vec3 aVertexPosition;
     attribute vec4 aVertexColor;
 
-    uniform mat4 uMVMatrix;
-    uniform mat4 uPMatrix;
-    uniform int height;
-    uniform int width;
+    uniform mat2 viewMatrix;
     varying vec4 vColor;
     varying vec2 texCoord;
 
     void main(void) {
         gl_Position = vec4(aVertexPosition, 1.0);
         vColor = aVertexColor;
-        texCoord = vec2(aVertexPosition.x, aVertexPosition.y);
+        texCoord = viewMatrix * vec2(aVertexPosition.x, aVertexPosition.y);
     }
 </script>
 
@@ -51,10 +48,10 @@
     varying vec2 texCoord;
 
     void main(void) {
-        gl_FragColor = vColor;
-        gl_FragColor.r = (1.0 + texCoord.x) / 2.0;
-        gl_FragColor.g = (1.0 + texCoord.y) / 2.0;
-        gl_FragColor.b = (1.0 + texCoord.x) / 2.0;
+        gl_FragColor = vec4(0, 0, 0, 1.0);
+        gl_FragColor.r = fract(texCoord.x);
+        gl_FragColor.g = fract(texCoord.y);
+        gl_FragColor.b = 0.5;
     }
 </script>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
@@ -67,7 +64,6 @@
 <body> 
   <div id="port">
       <canvas id="canvas" style="border: none;" width="500" height="500"></canvas>
-      <div id="status">Some text!</div>
   </div>
   <script type="text/javascript">
       $(document).ready(function() {

@@ -45,6 +45,7 @@
         gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
         shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
         shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+        shaderProgram.viewMatrix = gl.getUniformLocation(shaderProgram, "viewMatrix");
         return shaderProgram;
     };
     loadIdentity = function() {
@@ -92,6 +93,10 @@
         mvMatrix = mvMatrix.x(m);
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, new Float32Array(pMatrix.flatten()));
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, new Float32Array(mvMatrix.flatten()));
+
+
+        var viewportSize = Math.min(canvas.width, canvas.height);
+        gl.uniformMatrix2fv(shaderProgram.viewMatrix, false, new Float32Array([gl.viewportWidth / viewportSize, 0, 0, gl.viewportHeight / viewportSize]));
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);

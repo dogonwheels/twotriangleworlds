@@ -25,7 +25,6 @@ Matrix.prototype.flatten = function ()
     if (this.elements.length == 0)
         return [];
 
-
     for (var j = 0; j < this.elements[0].length; j++)
         for (var i = 0; i < this.elements.length; i++)
             result.push(this.elements[i][j]);
