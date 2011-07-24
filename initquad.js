@@ -1,6 +1,5 @@
 createWorld = (function() {
-    var createShader, drawScene, initBuffers, initGL, initShaders, resizeScene, start;
-    initGL = function(canvas) {
+    var initGL = function(canvas) {
         var gl;
         gl = canvas.getContext("experimental-webgl");
         gl.viewportWidth = canvas.width;
@@ -10,7 +9,7 @@ createWorld = (function() {
         }
         return gl;
     };
-    resizeScene = function(gl, canvas) {
+    var resizeScene = function(gl, canvas) {
         var viewport = $("#port");
         canvas.width = viewport.width();
         canvas.height = viewport.height();
@@ -18,16 +17,16 @@ createWorld = (function() {
         gl.viewportHeight = canvas.height;
     };
 
-    createShader = function(gl, shader, text) {
-        gl.shaderSource(shader, text);
-        gl.compileShader(shader);
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            alert(gl.getShaderInfoLog(shader));
-            return null;
-        }
-        return shader;
-    };
-    initShaders = function(gl, vertexShaderSource, fragmentShaderSource) {
+    var initShaders = function(gl, vertexShaderSource, fragmentShaderSource, uniforms) {
+        var createShader = function(gl, shader, text) {
+            gl.shaderSource(shader, text);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert(gl.getShaderInfoLog(shader));
+                return null;
+            }
+            return shader;
+        };
         var fragmentShader = createShader(gl, gl.createShader(gl.FRAGMENT_SHADER), fragmentShaderSource);
         var vertexShader = createShader(gl, gl.createShader(gl.VERTEX_SHADER), vertexShaderSource);
 
@@ -42,6 +41,10 @@ createWorld = (function() {
         shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
         gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
         shaderProgram.viewMatrix = gl.getUniformLocation(shaderProgram, "viewMatrix");
+
+        _(uniforms).each(function(uniform) {
+            shaderProgram[uniform] = gl.getUniformLocation(shaderProgram, uniform);
+        });
         return shaderProgram;
     };
     initBuffers = function(gl) {
@@ -65,21 +68,26 @@ createWorld = (function() {
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, quadBuffer.numItems);
     };
-    start = function(vertexShaderSource, fragmentShaderSource) {
+    start = function(vertexShaderSource, fragmentShaderSource, uniforms, tick) {
         var canvas = document.getElementById("canvas");
         var gl = initGL(canvas);
-        var shaderProgram = initShaders(gl, vertexShaderSource, fragmentShaderSource);
+        var shaderProgram = initShaders(gl, vertexShaderSource, fragmentShaderSource, uniforms);
         var quadBuffer = initBuffers(gl);
         gl.clearColor(1.0, 0.2, 0.4, 1.0);
         gl.clearDepth(1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
+        var redraw = true;
         draw = function() {
-            return drawScene(gl, quadBuffer, shaderProgram);
+            if (tick(gl, shaderProgram) || redraw) {
+                drawScene(gl, quadBuffer, shaderProgram);
+                redraw = false;
+            }
         };
         resize = function() {
             resizeScene(gl, canvas);
-            return draw();
+            redraw = true;
+            draw();
         };
         $(window).resize(resize);
         resize();
