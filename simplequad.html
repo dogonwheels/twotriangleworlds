@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Colored Squares</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+    #status {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        color: white;
+        font-family: sans-serif;
+        font-size: 3em;
+    }
+    #port {
+        width:100%;
+        height:100%;
+    }
+</style>
+
+<script type="text/shader" id="vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aVertexColor;
+
+    uniform mat2 viewMatrix;
+    varying vec4 vColor;
+    varying vec2 texCoord;
+
+    void main(void) {
+        gl_Position = vec4(aVertexPosition, 1.0);
+        vColor = aVertexColor;
+        texCoord = viewMatrix * vec2(aVertexPosition.x, aVertexPosition.y);
+    }
+</script>
+
+<script type="text/shader" id="fragment">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    varying vec4 vColor;
+    varying vec2 texCoord;
+
+    void main(void) {
+        gl_FragColor = vec4(0, 0, 0, 1.0);
+        gl_FragColor.r = fract(texCoord.x);
+        gl_FragColor.g = fract(texCoord.y);
+        gl_FragColor.b = 0.5;
+    }
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="underscore-min.js"></script>
+<script type="text/javascript" src="initquad.js"></script>
+</head>
+
+<body> 
+  <div id="port">
+      <canvas id="canvas" style="border: none;" width="500" height="500"></canvas>
+  </div>
+  <script type="text/javascript">
+      $(document).ready(function() {
+          var vertexShaderSource = document.getElementById("vertex").text;
+          var fragmentShaderSource = document.getElementById("fragment").text;
+          createWorld(vertexShaderSource, fragmentShaderSource, [], function() {});
+      });
+  </script>
+</body>
+
+</html>

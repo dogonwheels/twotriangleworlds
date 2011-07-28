@@ -1,0 +1,75 @@
+<html>
+
+<head>
+<title>Mandelbrot</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="style.css" media="screen,print" />
+<script type="text/shader" id="vertex">
+    attribute vec3 aVertexPosition;
+
+    uniform mat2 viewMatrix;
+    varying vec2 texCoord;
+
+    void main(void) {
+        gl_Position = vec4(aVertexPosition, 1.0);
+        texCoord = viewMatrix * vec2(aVertexPosition.x, aVertexPosition.y);
+    }
+</script>
+
+<script type="text/shader" id="fragment">
+    #ifdef GL_ES
+    precision highp float;
+    #endif
+
+    varying vec4 vColor;
+    varying vec2 texCoord;
+    uniform float offset;
+
+    void main(void) {
+        gl_FragColor = vec4(0, 0, 0, 1.0);
+
+        vec2 c = texCoord - vec2(offset, 0);
+        vec2 z = vec2(0, 0);
+        vec2 new_z = vec2(0, 0);
+        int escape = 0;
+
+        for (int iters = 0; iters < 50; iters++) {
+            new_z.x = (z.x * z.x) - (z.y * z.y) + c.x;
+            new_z.y = 2.0 * z.x * z.y + c.y;
+            z = new_z;
+            if (length(z) > 4.0 && escape < 1) {
+                escape = iters;
+            }
+        }
+
+        float effort = float(escape) / 50.0;
+        vec4 color = vec4(effort, effort / 2.0, effort * effort, 1);
+        gl_FragColor = color;
+    }
+</script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="underscore-min.js"></script>
+<script type="text/javascript" src="initquad.js"></script>
+</head>
+
+<body> 
+  <div id="port">
+      <canvas id="canvas" style="border: none;" width="500" height="500"></canvas>
+  </div>
+  <script type="text/javascript">
+      $(document).ready(function() {
+          var vertexShaderSource = document.getElementById("vertex").text;
+          var fragmentShaderSource = document.getElementById("fragment").text;
+
+          var uniforms = ["offset"];
+          var tick = function (gl, values) {
+              gl.uniform1f(values.offset, 0.75);
+              return false;
+          };
+
+          createWorld(vertexShaderSource, fragmentShaderSource, uniforms, tick);
+      });
+  </script>
+</body>
+
+</html>
