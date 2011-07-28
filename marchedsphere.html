@@ -23,13 +23,13 @@
     varying vec4 vColor;
     varying vec2 texCoord;
     uniform float radius;
+    uniform vec3 light;
 
     float distanceToSphere(vec3 point) {
         return distance(point, vec3(0, 0, 0)) - radius;
     }
 
     void main(void) {
-        vec3 light = normalize(vec3(1, -1, 1));
         vec3 eye = vec3(0, 0, -5);
         vec3 rayStart = vec3(texCoord.x, texCoord.y, 0);
         vec3 rayDirection = normalize(rayStart - eye);
@@ -44,7 +44,8 @@
                 float y = nextStep - distanceToSphere(rayStart + vec3(0, 0.1, 0));
                 float z = nextStep - distanceToSphere(rayStart + vec3(0, 0, 0.1));
                 vec3 normal = normalize(vec3(x, y, z));
-                float level = dot(normal, light);
+                vec3 toLight = normalize(light - rayStart);
+                float level = dot(normal, toLight);
                 color = mix(vec4(0, 0, 0, 1), vec4(1, 0, 0, 1), level);
             }
         }
@@ -66,11 +67,14 @@
           var vertexShaderSource = document.getElementById("vertex").text;
           var fragmentShaderSource = document.getElementById("fragment").text;
 
-          var uniforms = ["radius"];
+          var uniforms = ["radius", "light"];
           var tick = function (gl, values) {
               var time = (new Date()).getTime() / 1000.0;
               var radius = (Math.sin(time) + 2) / 4.0;
+              var lightX = Math.sin(time * 1.3) * 2;
+              var lightY = Math.sin(time * 0.7) * 2;
               gl.uniform1f(values.radius, radius);
+              gl.uniform3fv(values.light, [lightX, lightY, 1]);
               return true;
           };
 
