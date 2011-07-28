@@ -29,6 +29,7 @@
     }
 
     void main(void) {
+        vec3 light = normalize(vec3(1, -1, 1));
         vec3 eye = vec3(0, 0, -5);
         vec3 rayStart = vec3(texCoord.x, texCoord.y, 0);
         vec3 rayDirection = normalize(rayStart - eye);
@@ -37,10 +38,15 @@
         bool intersects = false;
         for (int i = 0; i < 10; i++) {
             float nextStep = distanceToSphere(rayStart);
-            if (nextStep < 0.01) {
-                color = vec4(0, 0, 0, 1);
-            }
             rayStart = rayStart + (nextStep * rayDirection);
+            if (nextStep < 0.01) {
+                float x = nextStep - distanceToSphere(rayStart + vec3(0.1, 0, 0));
+                float y = nextStep - distanceToSphere(rayStart + vec3(0, 0.1, 0));
+                float z = nextStep - distanceToSphere(rayStart + vec3(0, 0, 0.1));
+                vec3 normal = normalize(vec3(x, y, z));
+                float level = dot(normal, light);
+                color = mix(vec4(0, 0, 0, 1), vec4(1, 0, 0, 1), level);
+            }
         }
 
         gl_FragColor = color;
