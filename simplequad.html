@@ -67,7 +67,7 @@
       $(document).ready(function() {
           var vertexShaderSource = document.getElementById("vertex").text;
           var fragmentShaderSource = document.getElementById("fragment").text;
-          createWorld(vertexShaderSource, fragmentShaderSource);
+          createWorld(vertexShaderSource, fragmentShaderSource, [], function() {});
       });
   </script>
 </body>
