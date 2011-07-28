@@ -90,6 +90,7 @@ createWorld = (function() {
             draw();
         };
         $(window).resize(resize);
+        setInterval(draw, 20);
         resize();
     };
     return start;

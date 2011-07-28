@@ -68,8 +68,10 @@
 
           var uniforms = ["radius"];
           var tick = function (gl, values) {
-              gl.uniform1f(values.radius, 0.75);
-              return false;
+              var time = (new Date()).getTime() / 1000.0;
+              var radius = (Math.sin(time) + 2) / 4.0;
+              gl.uniform1f(values.radius, radius);
+              return true;
           };
 
           createWorld(vertexShaderSource, fragmentShaderSource, uniforms, tick);
