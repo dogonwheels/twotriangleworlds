@@ -2,11 +2,11 @@ createWorld = (function() {
     var initGL = function(canvas) {
         var gl;
         gl = canvas.getContext("experimental-webgl");
+        if (!gl) {
+            alert("Could not initialise WebGL. You need a reasonable GPU and the latest Chrome or Safari to see this.");
+        }
         gl.viewportWidth = canvas.width;
         gl.viewportHeight = canvas.height;
-        if (!gl) {
-            alert("Could not initialise WebGL, sorry :-(");
-        }
         return gl;
     };
     var resizeScene = function(gl, canvas) {
